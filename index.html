@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Stok Koperasi Sekolah</title>
+  <link rel="stylesheet" href="./style.css">
+  <script src="./app.js" defer></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-content">
+      <div class="brand-mark" aria-hidden="true">SK</div>
+      <div>
+        <h1>Stok Koperasi Sekolah</h1>
+        <p>Catat barang masuk, keluar, dan nilai persediaan</p>
+      </div>
+    </div>
+  </header>
+
+  <main class="container page-content">
+    <section class="summary-grid" aria-label="Ringkasan stok">
+      <article class="summary-card">
+        <p>Jenis barang</p>
+        <strong id="summary-products">0m</strong>
+      </article>
+      <article class="summary-card">
+        <p>Total barang tersedia</p>
+        <strong id="summary-quantity">0</strong>
+      </article>
+      <article class="summary-card">
+        <p>Nilai persediaan</p>
+        <strong id="summary-value">Rp0</strong>
+      </article>
+    </section>
+
+    <div class="content-grid">
+      <div class="form-column">
+        <section class="card">
+          <div class="section-header">
+            <div>
+              <h2 id="product-form-title">Tambah barang</h2>
+              <p>Masukkan detail barang baru. Stok awal akan tercatat sebagai barang masuk.</p>
+            </div>
+            <span class="section-badge">BARANG</span>
+          </div>
+          <form id="product-form" class="form-grid">
+            <div class="field field-wide">
+              <label for="product-name">Nama barang</label>
+              <input id="product-name" name="name" required maxlength="80" placeholder="Contoh: Kopi Arabika 250g">
+            </div>
+            <div class="field">
+              <label for="product-category">Kategori</label>
+              <input id="product-category" name="category" maxlength="50" placeholder="Contoh: Minuman">
+            </div>
+            <div class="field">
+              <label for="product-price">Harga per barang (Rp)</label>
+              <input id="product-price" name="price" type="number" min="0" step="1" required placeholder="25000">
+            </div>
+            <div class="field">
+              <label for="opening-stock">Stok awal</label>
+              <input id="opening-stock" name="quantity" type="number" min="0" step="1" value="0" required>
+            </div>
+            <div class="field">
+              <label for="opening-date">Tanggal masuk</label>
+              <input id="opening-date" name="date" type="date" required>
+            </div>
+            <div class="field field-wide">
+              <button id="product-submit" class="primary-button" type="submit">Simpan barang</button>
+              <button id="product-cancel" class="secondary-button" type="button" hidden>Batal edit</button>
+            </div>
+          </form>
+        </section>
+
+        <section class="card">
+          <div class="section-header">
+            <div>
+              <h2>Catat pergerakan stok</h2>
+              <p>Stok akan bertambah atau berkurang otomatis sesuai transaksi.</p>
+            </div>
+            <span class="section-badge">TRANSAKSI</span>
+          </div>
+          <form id="movement-form" class="form-grid">
+            <div class="field">
+              <label for="movement-type">Jenis transaksi</label>
+              <select id="movement-type" name="type">
+                <option value="masuk">Barang masuk</option>
+                <option value="keluar">Barang keluar</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="movement-date">Tanggal transaksi</label>
+              <input id="movement-date" name="date" type="date" required>
+            </div>
+            <div class="field field-wide">
+              <label for="movement-product">Pilih barang</label>
+              <div id="movement-product-picker" class="searchable-select">
+                <input id="movement-product" type="search" role="combobox" aria-autocomplete="list"
+                  aria-expanded="false" aria-controls="movement-product-options"
+                  placeholder="Cari dan pilih beberapa barang..." autocomplete="off">
+                <div id="movement-selected-products" class="selected-products" aria-live="polite" hidden></div>
+                <div id="movement-product-options" class="searchable-options" role="listbox"
+                  aria-multiselectable="true" hidden></div>
+              </div>
+              <p id="stock-hint" class="field-hint">Isi jumlah untuk masing-masing barang yang dipilih.</p>
+            </div>
+            <div class="field field-wide">
+              <label for="movement-price">Harga per barang (Rp)</label>
+              <input id="movement-price" name="price" type="number" min="0" step="1" required>
+              <p id="price-hint" class="field-hint">Harga saat ini</p>
+            </div>
+            <div class="field field-wide">
+              <button class="primary-button" type="submit">Simpan transaksi</button>
+            </div>
+          </form>
+        </section>
+      </div>
+
+      <section class="card">
+        <div class="section-header">
+          <div>
+            <h2>Riwayat transaksi</h2>
+            <p>Tanggal, jumlah, dan nilai setiap barang masuk/keluar.</p>
+          </div>
+          <span class="section-badge">RIWAYAT</span>
+        </div>
+        <div class="field filter-field">
+          <label for="history-filter">Kategori transaksi</label>
+          <select id="history-filter">
+            <option value="semua">Semua transaksi</option>
+            <option value="masuk">Barang masuk</option>
+            <option value="keluar">Barang keluar</option>
+          </select>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Tanggal / barang</th><th>Jenis</th><th>Jumlah</th><th>Nilai</th></tr>
+            </thead>
+            <tbody id="history-rows"></tbody>
+          </table>
+          <div id="history-empty" class="empty-state">Belum ada transaksi.</div>
+        </div>
+      </section>
+    </div>
+
+    <section class="card inventory-card">
+      <div class="section-header inventory-header">
+        <div>
+          <h2>Daftar persediaan</h2>
+          <p>Saldo stok dan harga terkini untuk setiap barang.</p>
+        </div>
+        <div class="field search-field">
+          <label for="search">Cari barang</label>
+          <input id="search" type="search" placeholder="Nama atau kategori...">
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Nama barang</th><th>Kategori</th><th>Harga / barang</th><th>Stok</th><th>Nilai stok</th><th>Aksi</th></tr>
+          </thead>
+          <tbody id="inventory-rows"></tbody>
+        </table>
+        <div id="inventory-empty" class="empty-state">Belum ada barang. Tambahkan barang untuk memulai.</div>
+      </div>
+    </section>
+  </main>
+
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+</body>
+</html>
